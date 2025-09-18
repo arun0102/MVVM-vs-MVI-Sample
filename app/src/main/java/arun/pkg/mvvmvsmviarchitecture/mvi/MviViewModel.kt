@@ -1,13 +1,13 @@
 package arun.pkg.mvvmvsmviarchitecture.mvi
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,8 +17,8 @@ import kotlin.time.Duration.Companion.seconds
 class MviViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    var state by mutableStateOf(MviState())
-        private set
+    private val _state = MutableStateFlow(MviState())
+    val state: StateFlow<MviState> = _state
 
     init {
         processIntent(MviIntent.LoadData) // Initial load
@@ -35,11 +35,15 @@ class MviViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            state = state.copy(isLoading = true)
+            _state.update {
+                it.copy(isLoading = true)
+            }
             withContext(ioDispatcher) {
                 delay(5.seconds) // Simulate network call or long-running task
             }
-            state = state.copy(isLoading = false)
+            _state.update {
+                it.copy(isLoading = false)
+            }
         }
     }
 }

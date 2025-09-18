@@ -6,3 +6,12 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.57.1" apply false
     id("com.google.devtools.ksp") version "2.2.0-2.0.2" apply false // Or the version you defined in libs.versions.toml
 }
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin)
+    }
+}
